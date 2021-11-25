@@ -1,6 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:radishmarket/login_page.dart';
+import 'package:radishmarket/password_edit_page.dart';
+import 'package:radishmarket/profile_edit_page.dart';
+
+import 'main.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -11,49 +17,112 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  final User? user = FirebaseAuth.instance.currentUser;
+
+  String _name = '이름';
+  String _email = '이메일';
+
   @override
   Widget build(BuildContext context) {
-    /*return GetMaterialApp(
-      title: '무우 마켓',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('무우마켓'),
-          ),
-          body: TabBarView(
-            children: [
-              Text('판매글'),
-              Text('홈'),
-              Text('마이 페이지'),
-            ],
-          ),
-          bottomNavigationBar: TabBar(tabs: [
-            Tab(
-              icon: Icon(Icons.text_snippet),
-              text: 'home',
-            ),
-            Tab(
-              icon: Icon(Icons.home),
-              text: 'chat',
-            ),
-            Tab(
-              icon: Icon(Icons.people),
-              text: 'my',
-            )
-          ]),
-        ),
-      )
-    );*/
-
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("메인"),
+        title: const Text('사용자 정보'),
         centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            ClipOval(
+              child: Image(
+                width: 100,
+                image: AssetImage('assets/images/main.png'),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Container(
+              height: 120.0, // borderheight 원값은 130
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: Colors.black,
+                    style: BorderStyle.solid,
+                    width: 1
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: ListView(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Text(_name),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.email),
+                    title: Text(_email),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Row(
+              children: [
+                Expanded(
+                  flex: 4,
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      // 11_1 수정
+                      onPressed: () => Get.to(()=> const ProfileEditPage()),
+                      child: const Text('정보 수정'),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Expanded(
+                  flex: 4,
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => Get.to(()=> const PasswordEditPage()),
+                      child: const Text('비밀번호 수정'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            /*Container(
+                height: 100,
+                width: double.infinity,
+                padding: const EdgeInsets.only(top: 50.0), // 8단위 배수가 보기 좋음
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Get.offAll(()=>const LoginPage());
+                  },
+                  child: const Text("로그아웃"),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.deepOrange,
+                  ),
+                ),
+              ),*/
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 70,
+        width: double.infinity,
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0), // 8단위 배수가 보기 좋음
+        child: ElevatedButton(
+          onPressed: () async {
+            await FirebaseAuth.instance.signOut();
+            Get.offAll(()=>const LoginPage());
+          },
+          child: const Text("로그아웃"),
+          style: ElevatedButton.styleFrom(
+            primary: Colors.deepOrange,
+          ),
+        ),
       ),
     );
   }
@@ -63,11 +132,38 @@ class _MyPageState extends State<MyPage> {
     //해당 클래스가 호출되었을떄
     super.initState();
 
+    // 1차시 edit
+    _getUser();
   }
-
   @override
   void dispose() {
+    // 해당 클래스가 사라질떄
+
     super.dispose();
+  }
+
+  _getUser() {
+    FirebaseFirestore.instance.collection('user')
+        .doc(user!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if(documentSnapshot.exists){
+        try{
+          dynamic name = documentSnapshot.get(FieldPath(const ['name']));
+          String? email = user!.email;
+          setState(() {
+            _name = name;
+            _email = email!;
+          });
+        } on StateError catch(e){
+          logger.e(e);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('사용자명을 가져올 수 없습니다.'),
+            backgroundColor: Colors.deepOrange,
+          ));
+        }
+      }
+    });
   }
 
 }

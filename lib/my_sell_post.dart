@@ -2,15 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class MyPostPage extends StatefulWidget {
-  const MyPostPage({Key? key}) : super(key: key);
+class MySellPostPage extends StatefulWidget {
+  const MySellPostPage({Key? key}) : super(key: key);
 
 
   @override
-  State<MyPostPage> createState() => _MyPostPageState();
+  State<MySellPostPage> createState() => _MySellPostPageState();
 }
 
-class _MyPostPageState extends State<MyPostPage> {
+class _MySellPostPageState extends State<MySellPostPage> {
   @override
   Widget build(BuildContext context) {
     /*return GetMaterialApp(
@@ -48,11 +48,10 @@ class _MyPostPageState extends State<MyPostPage> {
         ),
       )
     );*/
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("판매 목록"),
+        title: const Text("나의 판매글"),
         centerTitle: true,
       ),
     );

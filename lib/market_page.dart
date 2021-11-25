@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:radishmarket/my_page.dart';
+import 'package:radishmarket/my_post.dart';
+import 'package:radishmarket/my_sell_post.dart';
 
 /// This is the main application widget.
 class MyApp extends StatelessWidget {
@@ -32,19 +35,23 @@ class _MarketPageState extends State<MarketPage> {
       fontWeight: FontWeight.bold
   );
   
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      '나의 판매글',
-      style: optionStyle,
-    ),
-    Text(
-      '홈 화면(모든 판매글)',
-      style: optionStyle,
-    ),
-    Text(
+  final List<Widget> _widgetOptions = <Widget>[
+    MySellPostPage(),
+    MyPostPage(),
+    MyPage(),
+    // Text(
+    //   '나의 판매글',
+    //   style: optionStyle,
+    // ),
+    // Text(
+    //   '홈 화면(모든 판매글)',
+    //   style: optionStyle,
+    // ),
+    // MyPage(),
+    /*Text(
       '마이페이지',
       style: optionStyle,
-    ),
+    ),*/
   ];
 
   void _onItemTapped(int index) {
@@ -57,11 +64,11 @@ class _MarketPageState extends State<MarketPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         title: const Text('무우마켓'),
         centerTitle: true,
-      ),
-      body: Center(
+      ),*/
+      body: SafeArea(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
