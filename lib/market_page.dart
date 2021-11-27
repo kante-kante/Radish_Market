@@ -39,7 +39,7 @@ class _MarketPageState extends State<MarketPage> {
     MySellPostPage(),
     MyPostPage(),
     MyPage(),
-    // Text(
+    /* Text(
     //   '나의 판매글',
     //   style: optionStyle,
     // ),
@@ -48,7 +48,7 @@ class _MarketPageState extends State<MarketPage> {
     //   style: optionStyle,
     // ),
     // MyPage(),
-    /*Text(
+    Text(
       '마이페이지',
       style: optionStyle,
     ),*/

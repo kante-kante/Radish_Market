@@ -11,6 +11,12 @@ class MyPostPage extends StatefulWidget {
 }
 
 class _MyPostPageState extends State<MyPostPage> {
+  final User? user = FirebaseAuth.instance.currentUser;
+
+  String _name = '이름';
+  String _email = '이메일';
+
+
   @override
   Widget build(BuildContext context) {
     /*return GetMaterialApp(
@@ -55,6 +61,35 @@ class _MyPostPageState extends State<MyPostPage> {
         title: const Text("판매 목록"),
         centerTitle: true,
       ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                ClipOval(
+                  child: Image(
+                    width: 100,
+                    image: AssetImage('assets/images/main.png'),
+                  ),
+                ),
+                SizedBox(width: 30.0),
+                Column(
+                  children: [
+                    Text(_name),
+                    SizedBox(height:20),
+                    Text(_email),
+                  ],
+                ),
+                Spacer(),
+              ],
+            ),
+            Column(
+
+            ),
+          ],
+        ),
+      )
     );
   }
 
