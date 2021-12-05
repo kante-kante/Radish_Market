@@ -18,6 +18,7 @@ class _MySellPostPageState extends State<MySellPostPage> {
 
   String _name = '이름';
   String _email = '이메일';
+  String _profileImageURL = "";
 
 
   final List<String> entries = <String>['1','2','3','4','5','6'];
@@ -72,12 +73,9 @@ class _MySellPostPageState extends State<MySellPostPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ClipOval(
-                  child: Image(
-                    width: 80,
-                    height: 80,
-                    image: AssetImage('assets/images/main.png'),
-                  ),
+                CircleAvatar(
+                  backgroundImage:NetworkImage(_profileImageURL),
+                  radius: 30,
                 ),
                 SizedBox(width: 30.0),
                 Column(
@@ -90,7 +88,7 @@ class _MySellPostPageState extends State<MySellPostPage> {
               ],
             ),
             Divider(color: Colors.black, thickness: 0.5),
-            Container(
+            Container( // hasSize 오류로 인한 Container height 설정
               height: 530,
               child: ListView.separated(
                 //padding: const EdgeInsets.all(6),
@@ -117,6 +115,7 @@ class _MySellPostPageState extends State<MySellPostPage> {
     super.initState();
 
     _getUser();
+    _getProfile();
 
   }
 
@@ -142,6 +141,29 @@ class _MySellPostPageState extends State<MySellPostPage> {
           logger.e(e);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('사용자명을 가져올 수 없습니다.'),
+            backgroundColor: Colors.deepOrange,
+          ));
+        }
+      }
+    });
+  }
+
+  // 프로필 이미지 가져오기
+  _getProfile() {
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(user?.uid)
+        .get().then((DocumentSnapshot documentSnapshot){
+      if(documentSnapshot.exists){
+        try{
+          dynamic profileUrl = documentSnapshot.get(FieldPath(const ['profileUrl']));
+          setState(() {
+            _profileImageURL = profileUrl;
+          });
+        } on StateError catch(e){
+          logger.e(e);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('사용자 프로필을 가져올 수 없습니다.'),
             backgroundColor: Colors.deepOrange,
           ));
         }

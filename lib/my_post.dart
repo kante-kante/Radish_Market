@@ -17,6 +17,7 @@ class _MyPostPageState extends State<MyPostPage> {
 
   String _name = '이름';
   String _email = '이메일';
+  String _profileImageURL = "";
 
   final List<String> entries = <String>['Red','Green','Blue','Yellow','Pink','Magenta'];
 
@@ -73,12 +74,9 @@ class _MyPostPageState extends State<MyPostPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ClipOval(
-                  child: Image(
-                    width: 80,
-                    height: 80,
-                    image: AssetImage('assets/images/main.png'),
-                  ),
+                CircleAvatar(
+                  backgroundImage:NetworkImage(_profileImageURL),
+                  radius: 30,
                 ),
                 SizedBox(width: 30.0),
                 Column(
@@ -125,6 +123,7 @@ class _MyPostPageState extends State<MyPostPage> {
     super.initState();
 
     _getUser();
+    _getProfile();
 
   }
 
@@ -150,6 +149,29 @@ class _MyPostPageState extends State<MyPostPage> {
           logger.e(e);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text('사용자명을 가져올 수 없습니다.'),
+            backgroundColor: Colors.deepOrange,
+          ));
+        }
+      }
+    });
+  }
+
+  //파이어베이스 스토리지 프로필 정보 가져오기
+  _getProfile() {
+    FirebaseFirestore.instance
+        .collection('user')
+        .doc(user?.uid)
+        .get().then((DocumentSnapshot documentSnapshot){
+      if(documentSnapshot.exists){
+        try{
+          dynamic profileUrl = documentSnapshot.get(FieldPath(const ['profileUrl']));
+          setState(() {
+            _profileImageURL = profileUrl;
+          });
+        } on StateError catch(e){
+          logger.e(e);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('사용자 프로필을 가져올 수 없습니다.'),
             backgroundColor: Colors.deepOrange,
           ));
         }

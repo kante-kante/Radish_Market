@@ -167,6 +167,7 @@ class _JoinPageState extends State<JoinPage> {
         CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
         userCollection.doc(user!.uid).set({
           'name': _nameController.text,
+          'profileUrl': "",
         }).then((value) async {
           await FirebaseAuth.instance.signOut();
           Get.offAll(()=>const LoginPage());
