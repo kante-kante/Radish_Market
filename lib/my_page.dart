@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:radishmarket/change_profile_image.dart';
 import 'package:radishmarket/login_page.dart';
 import 'package:radishmarket/password_edit_page.dart';
 import 'package:radishmarket/profile_edit_page.dart';
@@ -33,7 +32,6 @@ class _MyPageState extends State<MyPage> {
   String _profileImageURL = "";
 
   final picker = ImagePicker();
-  Uri? selectedImage;
 
 
   @override
@@ -65,12 +63,6 @@ class _MyPageState extends State<MyPage> {
                 ),
               ],
             ),
-            /*ClipOval(
-              child: Image(
-                width: 100,
-                image: AssetImage('assets/images/main.png'),
-              ),
-            ),*/
             SizedBox(height: 20.0),
             Container(
               height: 120.0, // borderheight 원값은 130

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:radishmarket/main.dart';
+import 'package:radishmarket/post_page.dart';
 
 class MyPostPage extends StatefulWidget {
   const MyPostPage({Key? key}) : super(key: key);
@@ -25,42 +26,6 @@ class _MyPostPageState extends State<MyPostPage> {
 
   @override
   Widget build(BuildContext context) {
-    /*return GetMaterialApp(
-      title: '무우 마켓',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('무우마켓'),
-          ),
-          body: TabBarView(
-            children: [
-              Text('판매글'),
-              Text('홈'),
-              Text('마이 페이지'),
-            ],
-          ),
-          bottomNavigationBar: TabBar(tabs: [
-            Tab(
-              icon: Icon(Icons.text_snippet),
-              text: 'home',
-            ),
-            Tab(
-              icon: Icon(Icons.home),
-              text: 'chat',
-            ),
-            Tab(
-              icon: Icon(Icons.people),
-              text: 'my',
-            )
-          ]),
-        ),
-      )
-    );*/
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -104,15 +69,13 @@ class _MyPostPageState extends State<MyPostPage> {
               ),
             ),
           ],
-
-
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
           label: const Text('글 쓰기'),
           icon:const Icon(Icons.add),
           backgroundColor: Colors.deepOrange,
-          onPressed: () {}
+          onPressed: () => Get.to(()=> const PostPage()),
       ),
     );
   }
