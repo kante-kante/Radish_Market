@@ -293,6 +293,7 @@ class _PostPageState extends State<PostPage> {
         'content': _contentController.text,
         'price': _moneyController.text,
         'number': _numberController.text,
+        'author': user!.email,
         'image': downloadUrl,
         'datetime': DateTime.now().microsecondsSinceEpoch,
       }).catchError((e){

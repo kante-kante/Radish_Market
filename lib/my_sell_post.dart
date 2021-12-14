@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import 'main.dart';
 
@@ -13,8 +14,133 @@ class MySellPostPage extends StatefulWidget {
   State<MySellPostPage> createState() => _MySellPostPageState();
 }
 
+class _ArticleDescription extends StatelessWidget {
+  const _ArticleDescription({
+    Key? key,
+    required this.title,
+    required this.subtitle,
+    required this.author,
+    required this.publishDate,
+    required this.readDuration,
+  }) : super(key: key);
+
+  final String title;
+  final String subtitle;
+  final String author;
+  final String publishDate;
+  final String readDuration;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Padding(padding: EdgeInsets.only(bottom: 2.0)),
+              Text(
+                subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                author,
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.black87,
+                ),
+              ),
+              Text(
+                '$publishDate - $readDuration',
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CustomListItemTwo extends StatelessWidget {
+  const CustomListItemTwo({
+    Key? key,
+    required this.thumbnail,
+    required this.title,
+    required this.subtitle,
+    required this.author,
+    required this.publishDate,
+    required this.readDuration,
+  }) : super(key: key);
+
+  final Widget thumbnail;
+  final String title;
+  final String subtitle;
+  final String author;
+  final String publishDate;
+  final String readDuration;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: SizedBox(
+        height: 100,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            AspectRatio(
+              aspectRatio: 1.0,
+              child: thumbnail,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 0.0, 2.0, 0.0),
+                child: _ArticleDescription(
+                  title: title,
+                  subtitle: subtitle,
+                  author: author,
+                  publishDate: publishDate,
+                  readDuration: readDuration,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 메인 실행 위젯
 class _MySellPostPageState extends State<MySellPostPage> {
   final User? user = FirebaseAuth.instance.currentUser;
+  final db = FirebaseFirestore.instance;
 
   String _name = '이름';
   String _email = '이메일';
@@ -25,48 +151,14 @@ class _MySellPostPageState extends State<MySellPostPage> {
 
   @override
   Widget build(BuildContext context) {
-    /*return GetMaterialApp(
-      title: '무우 마켓',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('무우마켓'),
-          ),
-          body: TabBarView(
-            children: [
-              Text('판매글'),
-              Text('홈'),
-              Text('마이 페이지'),
-            ],
-          ),
-          bottomNavigationBar: TabBar(tabs: [
-            Tab(
-              icon: Icon(Icons.text_snippet),
-              text: 'home',
-            ),
-            Tab(
-              icon: Icon(Icons.home),
-              text: 'chat',
-            ),
-            Tab(
-              icon: Icon(Icons.people),
-              text: 'my',
-            )
-          ]),
-        ),
-      )
-    );*/
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text("나의 판매글"),
         centerTitle: true,
       ),
-      body: Padding(
+      body:
+      /*Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -103,9 +195,48 @@ class _MySellPostPageState extends State<MySellPostPage> {
               ),
             ),
           ],
-
         ),
-      ),
+      ),*/
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child:StreamBuilder<QuerySnapshot>(
+          stream: db.collection('post').where('uid', isEqualTo:user!.uid).orderBy('datetime', descending: true).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshots){
+            if(!snapshots.hasData){
+              return Center(
+                child:CircularProgressIndicator()
+              );
+            }else{
+              return Container(
+                height: 700,
+                child: ListView(
+                  children: snapshots.data!.docs.map((DocumentSnapshot doc){
+                    DateTime datetime = DateTime.fromMicrosecondsSinceEpoch(doc['datetime']);
+                    return ListView(
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          CustomListItemTwo(
+                              thumbnail: Image(
+                                image: NetworkImage(doc['image']),
+                              ),
+                              title: '${doc['title']}',
+                              subtitle: '${doc['content']}',
+                              author: user!.email as String,
+                              publishDate: DateFormat('yyyy-MM-dd HH:mm').format(datetime),
+                              readDuration: '테스트'
+                          ),
+                          Divider(color: Colors.black54, thickness: 0.5,)
+                        ]
+                      );
+
+                  }).toList(),
+                ),
+
+              );
+            }
+          }
+        )
+      )
     );
   }
 

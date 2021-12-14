@@ -15,12 +15,13 @@ class MyPostPage extends StatefulWidget {
 
 class _MyPostPageState extends State<MyPostPage> {
   final User? user = FirebaseAuth.instance.currentUser;
+  final db = FirebaseFirestore.instance;
 
   String _name = '이름';
   String _email = '이메일';
   String _profileImageURL = "";
 
-  final List<String> entries = <String>['Red','Green','Blue','Yellow','Pink','Magenta'];
+  final List<String> entries = <String>['Red','Green','Blue','Yellow','Pink','Magenta','Orange','Dark'];
 
 
 
@@ -54,20 +55,81 @@ class _MyPostPageState extends State<MyPostPage> {
               ],
             ),
             Divider(color: Colors.black, thickness: 0.5),
+            /*Container(
+              height: 530,
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  SliverFixedExtentList(
+                      delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index){
+                            return Container(
+                              child: Text('Color is $index'),
+                            );
+                          }
+                      ),
+                      itemExtent: 50.0
+                  )
+                ],
+              ),
+            )*/
             Container(
+              height: 530,
+              child:StreamBuilder<QuerySnapshot>(
+                stream: db.collection('post').orderBy('datetime',descending: true).snapshots(),
+                builder: (BuildContext context,AsyncSnapshot<QuerySnapshot> snapshots){
+                  if(!snapshots.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }else {
+                    return ListView(
+                      children: snapshots.data!.docs.map((DocumentSnapshot doc){
+                        return Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(doc['image']),
+                              radius: 30,
+                            ),
+                            title: Text(
+                              doc['title'],
+                              style: const TextStyle(
+                                fontSize: 15.0,
+                              ),
+                            ),
+                            subtitle: Text(
+                              doc['content'],
+                              style: const TextStyle(
+                                fontSize: 12.0,
+                                color: Colors.black45
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  }
+                },
+              ),
+            ),
+            /*Container(
               height: 530,
               child: ListView.separated(
                   //padding: const EdgeInsets.all(6),
                   itemCount: entries.length,
                   itemBuilder: (BuildContext context, int index){
                     return Container(
-                        padding: const EdgeInsets.all(16),
-                        child: Text('Color is ${entries[index]}')
+                        padding: const EdgeInsets.all(8),
+                        child: ListTile(
+                          leading: Icon(Icons.image, color: Colors.green,size: 20,),
+                          title: Text('Color is ${entries[index]}'),
+                          subtitle: Text('${entries[index]} Color'),
+                        )
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) => const Divider()
               ),
-            ),
+            ),*/
+
           ],
         ),
       ),
