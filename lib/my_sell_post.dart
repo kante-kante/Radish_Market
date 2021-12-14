@@ -228,7 +228,6 @@ class _MySellPostPageState extends State<MySellPostPage> {
                           Divider(color: Colors.black54, thickness: 0.5,)
                         ]
                       );
-
                   }).toList(),
                 ),
 
