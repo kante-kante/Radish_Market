@@ -2,7 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:intl/intl.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:radishmarket/main.dart';
+import 'package:radishmarket/post_detail.dart';
 import 'package:radishmarket/post_page.dart';
 
 class MyPostPage extends StatefulWidget {
@@ -13,6 +17,138 @@ class MyPostPage extends StatefulWidget {
   State<MyPostPage> createState() => _MyPostPageState();
 }
 
+/*class DetailScreen extends StatelessWidget{
+  final doc = DocumentSnapshot;
+
+  DetailScreen({Key? key, @required this.doc}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // UI를 그리기 위해 Todo를 사용합니다.
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('무우 마켓'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(doc[index]),
+      ),
+    );
+  }
+}*/
+
+/// 상세페이지로 이동
+class DetailPost extends StatelessWidget {
+  final DocumentSnapshot doc;
+
+  const DetailPost({Key? key, required this.doc}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime datetime = DateTime.fromMicrosecondsSinceEpoch(doc['datetime']);
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text("상세 페이지"),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              doc['title'],
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black
+              ),
+            ),
+            SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              //padding: EdgeInsets.all(),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                  width: 2
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:Image(
+                  image: NetworkImage(doc['image']),
+                  fit: BoxFit.contain,
+                  height: 250,
+                  width: 250,
+                ),
+            ),
+            SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.all(10),
+              child:Text(
+                ' ${doc['content']}',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.black87
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child:Text(
+                  '연락처: ${doc['number']}',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87
+                  ),
+                ),
+            ),
+            SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+                child:Text(
+                  '가격: ${doc['price']}',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87
+                  ),
+                ),
+            ),
+            SizedBox(height: 8),
+            Text(
+                '작성일시: ${DateFormat('yyyy-MM-dd HH:mm').format(datetime)}',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.black54,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _MyPostPageState extends State<MyPostPage> {
   final User? user = FirebaseAuth.instance.currentUser;
   final db = FirebaseFirestore.instance;
@@ -20,8 +156,6 @@ class _MyPostPageState extends State<MyPostPage> {
   String _name = '이름';
   String _email = '이메일';
   String _profileImageURL = "";
-
-  final List<String> entries = <String>['Red','Green','Blue','Yellow','Pink','Magenta','Orange','Dark'];
 
 
 
@@ -55,23 +189,7 @@ class _MyPostPageState extends State<MyPostPage> {
               ],
             ),
             Divider(color: Colors.black, thickness: 0.5),
-            /*Container(
-              height: 530,
-              child: CustomScrollView(
-                slivers: <Widget>[
-                  SliverFixedExtentList(
-                      delegate: SliverChildBuilderDelegate(
-                          (BuildContext context, int index){
-                            return Container(
-                              child: Text('Color is $index'),
-                            );
-                          }
-                      ),
-                      itemExtent: 50.0
-                  )
-                ],
-              ),
-            )*/
+
             Container(
               height: 530,
               child:StreamBuilder<QuerySnapshot>(
@@ -103,7 +221,12 @@ class _MyPostPageState extends State<MyPostPage> {
                                 color: Colors.black45
                               ),
                             ),
+                            onTap: () {
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (context) => DetailPost(doc:doc)));
+                            },
                           ),
+
                         );
                       }).toList(),
                     );
@@ -111,25 +234,7 @@ class _MyPostPageState extends State<MyPostPage> {
                 },
               ),
             ),
-            /*Container(
-              height: 530,
-              child: ListView.separated(
-                  //padding: const EdgeInsets.all(6),
-                  itemCount: entries.length,
-                  itemBuilder: (BuildContext context, int index){
-                    return Container(
-                        padding: const EdgeInsets.all(8),
-                        child: ListTile(
-                          leading: Icon(Icons.image, color: Colors.green,size: 20,),
-                          title: Text('Color is ${entries[index]}'),
-                          subtitle: Text('${entries[index]} Color'),
-                        )
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) => const Divider()
-              ),
-            ),*/
-
+            
           ],
         ),
       ),
