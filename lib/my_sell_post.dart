@@ -159,8 +159,8 @@ class _MySellPostPageState extends State<MySellPostPage> {
   }
 
   // 문서 삭제 (Delete)
-  void deleteDoc() {
-    db.collection('post').doc().delete();
+  void deleteDoc(String docID) {
+    db.collection('post').doc(docID).delete();
   }
 
   void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
@@ -209,7 +209,7 @@ class _MySellPostPageState extends State<MySellPostPage> {
             TextButton(
               child: Text("삭제하기"),
               onPressed: () {
-                deleteDoc();
+                deleteDoc(doc.id);
                 Navigator.pop(context);
               },
             )
