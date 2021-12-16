@@ -6,7 +6,6 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:radishmarket/main.dart';
-import 'package:radishmarket/post_detail.dart';
 import 'package:radishmarket/post_page.dart';
 
 class MyPostPage extends StatefulWidget {
@@ -16,26 +15,6 @@ class MyPostPage extends StatefulWidget {
   @override
   State<MyPostPage> createState() => _MyPostPageState();
 }
-
-/*class DetailScreen extends StatelessWidget{
-  final doc = DocumentSnapshot;
-
-  DetailScreen({Key? key, @required this.doc}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // UI를 그리기 위해 Todo를 사용합니다.
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('무우 마켓'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(doc[index]),
-      ),
-    );
-  }
-}*/
 
 /// 상세페이지로 이동
 class DetailPost extends StatelessWidget {
@@ -142,6 +121,15 @@ class DetailPost extends StatelessWidget {
                     color: Colors.black54,
                 ),
               ),
+            SizedBox(height: 8),
+            Text(
+              '작성자: ${doc['author']}',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.black54,
+              ),
+            ),
           ],
         ),
       ),
@@ -234,7 +222,7 @@ class _MyPostPageState extends State<MyPostPage> {
                 },
               ),
             ),
-            
+
           ],
         ),
       ),

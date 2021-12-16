@@ -146,8 +146,78 @@ class _MySellPostPageState extends State<MySellPostPage> {
   String _email = '이메일';
   String _profileImageURL = "";
 
+  TextEditingController _undNameCon = TextEditingController();
+  TextEditingController _undDescCon = TextEditingController();
 
-  final List<String> entries = <String>['1','2','3','4','5','6'];
+
+  // 문서 갱신 (Update)
+  void updateDoc(String docID, String name, String description) {
+    db.collection('post').doc(docID).update({
+      'title': name,
+      'content': description,
+    });
+  }
+
+  // 문서 삭제 (Delete)
+  void deleteDoc() {
+    db.collection('post').doc().delete();
+  }
+
+  void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
+    _undNameCon.text = doc['title'];
+    _undDescCon.text = doc['content'];
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("수정 / 삭제하기"),
+          content: Container(
+            height: 200,
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  decoration: InputDecoration(labelText: "제목"),
+                  controller: _undNameCon,
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: "내용"),
+                  controller: _undDescCon,
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("취소"),
+              onPressed: () {
+                _undNameCon.clear();
+                _undDescCon.clear();
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text("수정하기"),
+              onPressed: () {
+                if (_undNameCon.text.isNotEmpty &&
+                    _undDescCon.text.isNotEmpty) {
+                  updateDoc(doc.id, _undNameCon.text, _undDescCon.text);
+                }
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: Text("삭제하기"),
+              onPressed: () {
+                deleteDoc();
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,15 +285,20 @@ class _MySellPostPageState extends State<MySellPostPage> {
                     return ListView(
                         shrinkWrap: true,
                         children: <Widget>[
-                          CustomListItemTwo(
+                          GestureDetector(
+                          child:CustomListItemTwo(
                               thumbnail: Image(
                                 image: NetworkImage(doc['image']),
                               ),
                               title: '${doc['title']}',
                               subtitle: '${doc['content']}',
-                              author: user!.email as String,
+                              author: _name,
                               publishDate: DateFormat('yyyy-MM-dd HH:mm').format(datetime),
                               readDuration: '테스트'
+                          ),
+                            onLongPress: () {
+                              showUpdateOrDeleteDocDialog(doc);
+                            },
                           ),
                           Divider(color: Colors.black54, thickness: 0.5,)
                         ]

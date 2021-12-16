@@ -4,11 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:radishmarket/login_page.dart';
-import 'package:radishmarket/password_edit_page.dart';
-import 'package:radishmarket/profile_edit_page.dart';
 import 'main.dart';
 
 class PostPage extends StatefulWidget {
@@ -29,6 +25,9 @@ class _PostPageState extends State<PostPage> {
 
   PickedFile? _image;
   File? _imageUrl;
+
+  String _name = '이름';
+  String _email = '이메일';
 
 
 
@@ -213,7 +212,7 @@ class _PostPageState extends State<PostPage> {
   void initState() {
     //해당 클래스가 호출되었을떄
     super.initState();
-    //_getUser();
+    _getUser();
   }
 
   @override
@@ -222,7 +221,7 @@ class _PostPageState extends State<PostPage> {
     super.dispose();
   }
 
-  /*_getUser() {
+  _getUser() {
     FirebaseFirestore.instance.collection('user')
         .doc(user!.uid)
         .get()
@@ -244,7 +243,7 @@ class _PostPageState extends State<PostPage> {
         }
       }
     });
-  }*/
+  }
 
   Future _getImageFromGallery() async {
     var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
@@ -293,7 +292,7 @@ class _PostPageState extends State<PostPage> {
         'content': _contentController.text,
         'price': _moneyController.text,
         'number': _numberController.text,
-        'author': user!.email,
+        'author': _name,
         'image': downloadUrl,
         'datetime': DateTime.now().microsecondsSinceEpoch,
       }).catchError((e){
